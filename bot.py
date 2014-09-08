@@ -13,6 +13,7 @@ IRC_PORT=6667
 IRC_CHANNEL="#srobo-test"
 IRC_NICK="sr-cibot"
 GERRIT_ROOT="https://www.studentrobotics.org/gerrit"
+PROJECT_ROOT="{}/p/".format(GERRIT_ROOT)
 
 def paste(content):
     form = {'paste[parser]': 'plain_text',
@@ -89,6 +90,12 @@ def main():
         if not msg.startswith(prefix):
             return
         msg = msg[len(prefix):].strip()
+        if msg == 'help':
+            send('Usage:')
+            send('  {}: build g:[gerrit change]'.format(IRC_NICK))
+            send('  {}: build [project].git'.format(IRC_NICK))
+            send('  {}: build [project].git [branch]'.format(IRC_NICK))
+            return
         match = re.match('build\s+g:(\d+)$', msg)
         if match is not None:
             # Gerrit build
@@ -97,7 +104,7 @@ def main():
                 data = get_json(gerrit.changes(change).detail)
                 revision = max(msg['_revision_number'] for msg in data['messages'])
                 proj = data['project']
-                uri = "{}/p/{}.git".format(GERRIT_ROOT, proj)
+                uri = urllib.parse.urljoin(PROJECT_ROOT, proj)
                 ref = "refs/changes/{}/{}/{}".format(str(change)[-2:], change, revision)
                 submit_job(sender, uri, ref, 'g:{} ({})'.format(change, proj))
             except ValueError:
@@ -105,7 +112,7 @@ def main():
             return
         match = re.match(r'build\s+(\S+)\.git$', msg)
         if match is not None:
-            uri = "{}/p/{}.git".format(GERRIT_ROOT, match.group(1))
+            uri = urllib.parse.urljoin(PROJECT_ROOT, match.group(1))
             ref = "refs/heads/master"
             submit_job(sender, uri, ref, match.group(1) + '.git')
             return
@@ -113,7 +120,7 @@ def main():
         if match is not None:
             proj = match.group(1)
             branch = match.group(2)
-            uri = "{}/p/{}.git".format(GERRIT_ROOT, proj)
+            uri = urllib.parse.urljoin(PROJECT_ROOT, proj)
             ref = "refs/heads/" + branch
             submit_job(sender, uri, ref, '{}.git ({})'.format(proj, branch))
             return
