@@ -17,13 +17,16 @@ GERRIT_ROOT="https://www.studentrobotics.org/gerrit"
 PROJECT_ROOT="{}/p/".format(GERRIT_ROOT)
 
 def paste(content):
+    # remove control characters
+    content = ''.join(char for char in content if ord(char) >= 32 or char == '\n')
     form = {'paste[parser]': 'plain_text',
             'paste[body]': content,
             'paste[authorization]': 'burger',
             'paste[restricted]': '0'}
     try:
+        form_data = urllib.parse.urlencode(form).encode('utf-8')
         f = urllib.request.urlopen('http://pastie.org/pastes',
-                                   urllib.parse.urlencode(form).encode('utf-8'))
+                                   data=form_data)
         f.close()
         return f.geturl()
     except urllib.error.URLError:
@@ -76,7 +79,7 @@ def main():
                     send('{}: Your build of {} passed.'.format(recipient, what))
                 else:
                     logs = conn.get('jobs:{}:log'.format(jobID))
-                    pasted = paste(logs)
+                    pasted = paste(logs.decode('utf-8'))
                     send('{}: Your build of {} failed. Logs: {}'.format(recipient, what, pasted))
                     # TODO: paste failure somewhere
     thread_redis = threading.Thread(name='Sub', target=redis_subscribe)
