@@ -8,9 +8,9 @@ import urllib.parse
 import urllib.request
 import re
 
-IRC_NETWORK="irc.ndryden.com"
+IRC_NETWORK="irc.freenode.net"
 IRC_PORT=6667
-IRC_CHANNEL="#orbital"
+IRC_CHANNEL="#srobo-test"
 IRC_NICK="sr-cibot"
 GERRIT_ROOT="https://www.studentrobotics.org/gerrit"
 
@@ -36,10 +36,13 @@ class MainBot(SingleServerIRCBot):
         conn.join(IRC_CHANNEL)
 
     def on_pubmsg(self, conn, event):
-        print(dir(event))
-        print(event.arguments[0])
         self.send = lambda x: conn.privmsg(IRC_CHANNEL, x)
-        self.receive('prophile', event.arguments[0])
+        print(event.source)
+        match = re.match('^(.+)!(.+)@(.+)$', event.source)
+        if match is None:
+            self.send('What, who said that?')
+        print(event.arguments[0])
+        self.receive(match.group(1), event.arguments[0])
 
 def main():
     gerrit = hammock.Hammock(GERRIT_ROOT)
