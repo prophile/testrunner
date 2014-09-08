@@ -22,7 +22,7 @@ def paste(content):
     form = {'paste[parser]': 'plain_text',
             'paste[body]': content,
             'paste[authorization]': 'burger',
-            'paste[restricted]': '0'}
+            'paste[restricted]': '1'}
     try:
         form_data = urllib.parse.urlencode(form).encode('utf-8')
         f = urllib.request.urlopen('http://pastie.org/pastes',
