@@ -9,7 +9,7 @@ import redis
 
 DOCKER_BINARY='docker'
 DOCKER_IMAGE='alynn/svr-travis'
-CLONE_ONLY=True
+CLONE_ONLY=False
 
 conn = redis.StrictRedis()
 
