@@ -73,7 +73,7 @@ while True:
             run_job(jobID, ('git', 'fetch', 'origin', ref), target_dir)
             run_job(jobID, ('git', 'checkout', 'FETCH_HEAD'), target_dir)
             run_job(jobID, ('git', 'submodule', 'update', '--init', '--recursive'), target_dir)
-            if not CLONE_ONLY and os.path.exists(os.path.join(target_dir, '.travis.yml')):
+            if not CLONE_ONLY:
                 run_job(jobID, (DOCKER_BINARY, 'run', '--rm', '-v', '{}:/data'.format(target_dir), DOCKER_IMAGE, 'install', 'script'), target_dir)
         success = True
     except JobFailureException:
