@@ -1,2 +1,10 @@
 bottle==0.12.7
+certifi==14.05.14
+hammock==0.2.4
+irc==8.9.1
+jaraco.timing==1.0
+jaraco.util==10.2
+more-itertools==2.2
 redis==2.10.3
+requests==2.4.0
+six==1.7.3

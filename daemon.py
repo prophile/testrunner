@@ -8,6 +8,7 @@ from shlex import quote
 import redis
 
 DOCKER_IMAGE='alynn/svr-travis'
+CLONE_ONLY=True
 
 conn = redis.StrictRedis()
 
@@ -26,7 +27,7 @@ class TestJob(object):
 
 class RealJob(object):
     def __init__(self, command, cwd):
-        self.first_line = '$ ' + ' '.join(quote(arg) for arg in command)
+        self.first_line = '$ ' + ' '.join(quote(arg) for arg in command) + '\n'
         self.proc = subprocess.Popen(command, cwd=cwd, universal_newlines=True,
                                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
@@ -47,7 +48,7 @@ def run_job(jobID, *args, **kwargs):
     job = job_class(*args, **kwargs)
     for line in job:
         print(line)
-        conn.append('jobs:{}:log'.format(jobID), line + '\n')
+        conn.append('jobs:{}:log'.format(jobID), line)
     end_status = job.status
     if end_status is None:
         raise JobFailureException('Job never finished')
@@ -71,8 +72,9 @@ while True:
             run_job(jobID, ('git', 'fetch', 'origin', ref), target_dir)
             run_job(jobID, ('git', 'checkout', 'FETCH_HEAD'), target_dir)
             run_job(jobID, ('git', 'submodule', 'update', '--init', '--recursive'), target_dir)
-            if os.path.exists(os.path.join(target_dir, '.travis.yml')):
+            if not CLONE_ONLY and os.path.exists(os.path.join(target_dir, '.travis.yml')):
                 run_job(jobID, ('docker', 'run', '--rm', '-v', '{}:/data'.format(target_dir), DOCKER_IMAGE, 'install', 'script'), target_dir)
+            run_job(jobID, ('false',), target_dir)
         success = True
     except JobFailureException:
         pass
