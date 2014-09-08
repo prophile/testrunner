@@ -15,9 +15,9 @@ conn = redis.StrictRedis()
 
 class TestJob(object):
     def __init__(self, command, cwd):
-        self.elements = ["$ cd {}".format(cwd),
+        self.elements = ["$ cd {}".format(cwd).encode('utf-8'),
                          "$ {}".format(' '.join('"' + arg + '"' if '$' in arg or ' ' in arg else arg
-                                                  for arg in command))]
+                                                  for arg in command)).encode('utf-8')]
 
     def __iter__(self):
         return iter(self.elements)
@@ -28,8 +28,8 @@ class TestJob(object):
 
 class RealJob(object):
     def __init__(self, command, cwd):
-        self.first_line = '$ ' + ' '.join(quote(arg) for arg in command) + '\n'
-        self.proc = subprocess.Popen(command, cwd=cwd, universal_newlines=True,
+        self.first_line = ('$ ' + ' '.join(quote(arg) for arg in command) + '\n').encode('utf-8')
+        self.proc = subprocess.Popen(command, cwd=cwd,
                                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     def __iter__(self):
@@ -48,7 +48,7 @@ class JobFailureException(Exception):
 def run_job(jobID, *args, **kwargs):
     job = job_class(*args, **kwargs)
     for line in job:
-        print(line)
+        print(line.decode('utf-8'), end='')
         conn.append('jobs:{}:log'.format(jobID), line)
     end_status = job.status
     if end_status is None:
