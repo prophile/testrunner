@@ -6,13 +6,13 @@ RUN apt-get update && \
     apt-get -y upgrade && \
     apt-get install -y build-essential && \
     apt-get install -y software-properties-common && \
-    apt-get install -y byobu curl git htop man unzip vim wget && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y byobu curl git htop man unzip vim wget
 
 ENV HOME /root
 
 # Install Ruby
-RUN apt-get install -y ruby ruby-dev ruby-bundler && rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y ruby1.9.1 rubygems1.9.1 ruby1.9.1-dev
+RUN gem install bundler
 
 # Set working directory
 WORKDIR /data
@@ -32,7 +32,9 @@ RUN apt-get -y install python-pip
 RUN apt-get -y install python-virtualenv
 RUN mkdir ~/virtualenv
 RUN virtualenv -p python2.7 ~/virtualenv/2.7
-RUN virtualenv -p python3.4 ~/virtualenv/3.4
+
+# Clean up apt
+RUN rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["travis", "run", "--skip-version-check", "--skip-completion-check"]
 CMD ["-p"]
