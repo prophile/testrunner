@@ -1,0 +1,14 @@
+These install steps _MAY_ work from a current Ubuntu install:
+
+apt-get install docker.io
+apt-get install redis-server
+service docker.io start
+docker -t alynn/svr-travis travis-svr
+apt-get install python-virtualenv
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+service redis-server start
+python daemon.py &
+python bot.py &
+
