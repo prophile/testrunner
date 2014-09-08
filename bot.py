@@ -6,6 +6,7 @@ import json
 import uuid
 import urllib.parse
 import urllib.request
+import urllib.error
 import re
 
 IRC_NETWORK="irc.freenode.net"
@@ -20,10 +21,13 @@ def paste(content):
             'paste[body]': content,
             'paste[authorization]': 'burger',
             'paste[restricted]': '0'}
-    f = urllib.request.urlopen('http://pastie.org/pastes',
-                               urllib.parse.urlencode(form).encode('utf-8'))
-    f.close()
-    return f.geturl()
+    try:
+        f = urllib.request.urlopen('http://pastie.org/pastes',
+                                   urllib.parse.urlencode(form).encode('utf-8'))
+        f.close()
+        return f.geturl()
+    except urllib.error.URLError:
+        return "none, paste site returned an error"
 
 
 class MainBot(SingleServerIRCBot):
