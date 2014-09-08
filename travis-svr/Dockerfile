@@ -1,6 +1,7 @@
 FROM tomdesinto/docker-travis-run
 MAINTAINER Alistair Lynn <arplynn@gmail.com>
 
+RUN apt-get update
 RUN apt-get -y install python-pip
 RUN apt-get -y install python-virtualenv
 RUN mkdir ~/virtualenv
