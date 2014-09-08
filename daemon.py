@@ -7,6 +7,7 @@ from shlex import quote
 
 import redis
 
+DOCKER_BINARY='docker'
 DOCKER_IMAGE='alynn/svr-travis'
 CLONE_ONLY=True
 
@@ -73,7 +74,7 @@ while True:
             run_job(jobID, ('git', 'checkout', 'FETCH_HEAD'), target_dir)
             run_job(jobID, ('git', 'submodule', 'update', '--init', '--recursive'), target_dir)
             if not CLONE_ONLY and os.path.exists(os.path.join(target_dir, '.travis.yml')):
-                run_job(jobID, ('docker', 'run', '--rm', '-v', '{}:/data'.format(target_dir), DOCKER_IMAGE, 'install', 'script'), target_dir)
+                run_job(jobID, (DOCKER_BINARY, 'run', '--rm', '-v', '{}:/data'.format(target_dir), DOCKER_IMAGE, 'install', 'script'), target_dir)
             run_job(jobID, ('false',), target_dir)
         success = True
     except JobFailureException:
