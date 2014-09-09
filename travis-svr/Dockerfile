@@ -3,6 +3,7 @@ MAINTAINER Alistair Lynn <arplynn@gmail.com>
 
 RUN apt-get update
 RUN apt-get -y install python-pip
+RUN apt-get -y install python-dev
 RUN apt-get -y install python-virtualenv
 RUN mkdir ~/virtualenv
 RUN virtualenv -p python2.7 ~/virtualenv/2.7
