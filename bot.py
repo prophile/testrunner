@@ -11,7 +11,7 @@ import re
 
 IRC_NETWORK="irc.freenode.net"
 IRC_PORT=6667
-IRC_CHANNEL="#srobo-test"
+IRC_CHANNEL="#srobo"
 IRC_NICK="sr-cibot"
 GERRIT_ROOT="https://www.studentrobotics.org/gerrit"
 PROJECT_ROOT="{}/p/".format(GERRIT_ROOT)
